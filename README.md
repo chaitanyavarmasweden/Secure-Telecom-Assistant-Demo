@@ -15,6 +15,8 @@ npm install
 npm run dev
 ```
 
+Open the local address shown in the terminal (normally `http://localhost:5173`).
+
 ## Run the local API
 
 ```bash
