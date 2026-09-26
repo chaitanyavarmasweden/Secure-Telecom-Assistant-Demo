@@ -44,3 +44,9 @@ next-env.d.ts
 /.codex/
 /outputs/
 /work/
+
+# local Python test and virtual-environment files
+backend/.pytest_cache/
+backend/pytest-cache-files-*/
+backend/__pycache__/
+backend/.venv/
