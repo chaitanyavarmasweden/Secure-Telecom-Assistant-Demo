@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "T-Guard | Secure Telecom Engineering Assistant",
+  title: "Secure Telecom Engineering Assistant Demo",
   description: "A portfolio prototype for controlled engineering support, approval gates, and agent accountability.",
   other: {
     "codex-preview": "development",

@@ -55,7 +55,7 @@ export default function Home() {
         <header className="flex flex-col gap-4 border-b border-white/10 pb-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <div className="grid size-10 place-items-center rounded-xl border border-cyan-300/30 bg-cyan-300/10 text-cyan-200"><ShieldCheck className="size-5" /></div>
-            <div><p className="text-sm font-semibold tracking-wide text-white">T-Guard</p><p className="text-xs text-slate-400">Secure engineering assistant</p></div>
+            <div><p className="text-sm font-semibold tracking-wide text-white">Secure Telecom Engineering Assistant Demo</p><p className="text-xs text-slate-400">Secure engineering assistant</p></div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <Badge className="border border-amber-300/30 bg-amber-300/10 text-amber-100 hover:bg-amber-300/10">Demo workspace</Badge>
