@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Activity, ArrowUpRight, BookOpen, CheckCircle2, ChevronRight, ClipboardCheck, FileText, LockKeyhole, Search, ShieldCheck, Timer, UserRoundCheck } from "lucide-react";
+import { Activity, ArrowUpRight, BookOpen, CheckCircle2, ChevronRight, ClipboardCheck, FileText, LockKeyhole, RadioTower, Search, ServerCog, ShieldCheck, Timer, UserRoundCheck, Wifi } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,9 +11,16 @@ type Role = "Engineer" | "Reviewer" | "Admin";
 type AuditEvent = { action: string; actor: string; outcome: "Allowed" | "Blocked" | "Approved"; time: string };
 
 const sources = [
-  { title: "5G network change procedure", section: "4.2", trust: "Reviewed" },
-  { title: "Operations runbook: controlled changes", section: "2.1", trust: "Reviewed" },
-  { title: "Access policy for engineering tools", section: "3.4", trust: "Current" },
+  { title: "5G network change procedure", section: "4.2", trust: "Reviewed", summary: "Validate the approved maintenance window, impacted cells, peer review, and rollback owner before making a radio configuration change." },
+  { title: "Operations runbook: controlled changes", section: "2.1", trust: "Reviewed", summary: "Capture baseline KPIs, confirm an implementation plan, and monitor availability during the approved change window." },
+  { title: "Access policy for engineering tools", section: "3.4", trust: "Current", summary: "Engineers can prepare evidence and draft reports. A Reviewer or Admin must approve any recommendation that could affect production." },
+];
+
+const networkSignals = [
+  { label: "5G availability", value: "99.98%", note: "North region", tone: "text-emerald-200", icon: Wifi },
+  { label: "RAN alarms", value: "2", note: "No critical alarms", tone: "text-amber-100", icon: RadioTower },
+  { label: "Change window", value: "22:00 CET", note: "Planned tonight", tone: "text-cyan-100", icon: Timer },
+  { label: "Tool access", value: "Controlled", note: "No direct execution", tone: "text-slate-100", icon: ServerCog },
 ];
 
 const roleRules: Record<Role, string[]> = {
@@ -26,6 +33,7 @@ export default function Home() {
   const [role, setRole] = useState<Role>("Engineer");
   const [query, setQuery] = useState("What checks are required before a planned radio configuration change?");
   const [searched, setSearched] = useState(false);
+  const [selectedSource, setSelectedSource] = useState(0);
   const [reportStatus, setReportStatus] = useState<"Not created" | "Awaiting review" | "Approved">("Not created");
   const [audit, setAudit] = useState<AuditEvent[]>([
     { action: "Document search", actor: "Engineer", outcome: "Allowed", time: "09:42" },
@@ -87,6 +95,12 @@ export default function Home() {
             <TabsList className="border border-white/10 bg-[#0a202e] p-1"><TabsTrigger value="assistant" className="data-[state=active]:bg-cyan-300 data-[state=active]:text-[#05202d]">Assistant</TabsTrigger><TabsTrigger value="review" className="data-[state=active]:bg-cyan-300 data-[state=active]:text-[#05202d]">Review queue</TabsTrigger><TabsTrigger value="audit" className="data-[state=active]:bg-cyan-300 data-[state=active]:text-[#05202d]">Audit and evaluation</TabsTrigger></TabsList>
 
             <TabsContent value="assistant" className="mt-5">
+              <section className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                {networkSignals.map((signal) => {
+                  const SignalIcon = signal.icon;
+                  return <div key={signal.label} className="rounded-2xl border border-white/10 bg-[#0a202e] p-4 shadow-sm shadow-black/10"><div className="flex items-start justify-between gap-3"><div><p className="text-xs text-slate-400">{signal.label}</p><p className={`mt-1 text-lg font-semibold ${signal.tone}`}>{signal.value}</p><p className="mt-1 text-xs text-slate-500">{signal.note}</p></div><div className="grid size-9 place-items-center rounded-xl bg-cyan-300/10 text-cyan-200"><SignalIcon className="size-4" /></div></div></div>;
+                })}
+              </section>
               <section className="overflow-hidden rounded-2xl border border-white/10 bg-[#0a202e]">
                 <div className="border-b border-white/10 p-5 sm:p-7">
                   <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-semibold uppercase tracking-[0.13em] text-cyan-300">Controlled lookup</p><h1 className="mt-1 text-2xl font-semibold tracking-tight text-white">Ask the engineering workspace</h1></div><Badge variant="outline" className="border-white/15 text-slate-300">Approved documents only</Badge></div>
@@ -99,8 +113,8 @@ export default function Home() {
                 </div>
               </section>
               <section className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_280px]">
-                <div className="rounded-2xl border border-white/10 bg-[#0a202e] p-5 sm:p-6"><div className="flex items-center justify-between"><h2 className="font-semibold text-white">Retrieved sources</h2><span className="text-xs text-slate-500">Demo corpus</span></div><div className="mt-4 divide-y divide-white/10">{sources.map((source) => <div key={source.title} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0"><div className="grid size-9 place-items-center rounded-lg bg-white/5 text-cyan-300"><FileText className="size-4" /></div><div className="min-w-0 flex-1"><p className="truncate text-sm font-medium text-slate-100">{source.title}</p><p className="mt-0.5 text-xs text-slate-500">Section {source.section} · {source.trust}</p></div><ChevronRight className="size-4 text-slate-500" /></div>)}</div></div>
-                <div className="rounded-2xl border border-white/10 bg-[#0a202e] p-5 sm:p-6"><p className="text-sm font-semibold text-white">Safety checks</p><div className="mt-4 space-y-3 text-sm text-slate-300"><p className="flex gap-2"><CheckCircle2 className="size-4 shrink-0 text-emerald-300" />Document scope checked</p><p className="flex gap-2"><CheckCircle2 className="size-4 shrink-0 text-emerald-300" />Tool use logged</p><p className="flex gap-2"><CheckCircle2 className="size-4 shrink-0 text-emerald-300" />Approval boundary active</p></div></div>
+                <div className="rounded-2xl border border-white/10 bg-[#0a202e] p-5 sm:p-6"><div className="flex items-center justify-between"><h2 className="font-semibold text-white">Retrieved sources</h2><span className="text-xs text-slate-500">Demo corpus</span></div><div className="mt-4 divide-y divide-white/10">{sources.map((source, index) => <button type="button" onClick={() => setSelectedSource(index)} key={source.title} className={`flex w-full items-center gap-3 py-3 text-left first:pt-0 last:pb-0 ${selectedSource === index ? "rounded-lg bg-cyan-300/5 px-2" : ""}`}><div className="grid size-9 place-items-center rounded-lg bg-white/5 text-cyan-300"><FileText className="size-4" /></div><div className="min-w-0 flex-1"><p className="truncate text-sm font-medium text-slate-100">{source.title}</p><p className="mt-0.5 text-xs text-slate-500">Section {source.section} · {source.trust}</p></div><ChevronRight className="size-4 text-slate-500" /></button>)}</div></div>
+                <div className="rounded-2xl border border-white/10 bg-[#0a202e] p-5 sm:p-6"><p className="text-sm font-semibold text-white">Evidence preview</p><p className="mt-2 text-sm font-medium text-cyan-100">{sources[selectedSource].title}</p><p className="mt-3 text-sm leading-6 text-slate-400">{sources[selectedSource].summary}</p><div className="mt-5 border-t border-white/10 pt-4"><p className="text-sm font-semibold text-white">Safety checks</p><div className="mt-3 space-y-3 text-sm text-slate-300"><p className="flex gap-2"><CheckCircle2 className="size-4 shrink-0 text-emerald-300" />Document scope checked</p><p className="flex gap-2"><CheckCircle2 className="size-4 shrink-0 text-emerald-300" />Tool use logged</p><p className="flex gap-2"><CheckCircle2 className="size-4 shrink-0 text-emerald-300" />Approval boundary active</p></div></div></div>
               </section>
             </TabsContent>
 
